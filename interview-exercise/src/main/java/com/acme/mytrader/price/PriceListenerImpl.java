@@ -17,9 +17,10 @@ public class PriceListenerImpl implements PriceListener {
 	private String security;
 	private TreeMap<Double,  List<TradingStrategy>> buyMap = new TreeMap<>();
 	private TreeMap<Double,  List<TradingStrategy>> sellMap = new TreeMap<>();
+	private Set<Double> removeItems = new HashSet<>();
 	
-	
-	
+	 private double price;
+	 
 	public PriceListenerImpl(String security) {
 		this.security = security;
 	}
@@ -47,36 +48,40 @@ public class PriceListenerImpl implements PriceListener {
 
 	@Override
 	public synchronized void   priceUpdate(String security, double price) {
-		
-		
-		
+		setPrice(price);
+		setRemoveItems(new HashSet<>());
 		List<List<TradingStrategy>> buyItems = buyMap.entrySet().stream()
 	    .filter(entry -> entry.getKey() >= price)
 	    .map(Entry::getValue)
 	    .collect(Collectors.toList());
-		Set<Double> removeItems = new HashSet<>();
-		for (List<TradingStrategy> items : buyItems) {
-			for (TradingStrategy ts : items) {
+		
+		buyItems.stream().forEach(items->{
+			items.forEach(ts->{
 				ts.execute(price);
-				removeItems.add(ts.getPrice());
-			}
-		}
+				this.removeItems.add(ts.getPrice());
+			});
+			});
+		
+		// remove buy testing strategies from buyMap
 		for(Double pr : removeItems) {
 			buyMap.remove(pr);
 		}
 		
-		removeItems =  new HashSet<>(); 
+		setRemoveItems(new HashSet<>());
 		
 		List<List<TradingStrategy>> sellItems = sellMap.entrySet().stream()
 			    .filter(entry -> entry.getKey() <= price)
 			    .map(Entry::getValue)
 			    .collect(Collectors.toList());
-		for (List<TradingStrategy> items : sellItems) {
-			for (TradingStrategy ts : items) {
+		
+		sellItems.stream().forEach(items->{
+			items.forEach(ts->{
 				ts.execute(price);
-				removeItems.add(ts.getPrice());
-			}
-		}
+				this.removeItems.add(ts.getPrice());
+			});
+			});
+		
+		// remove sell testing strategies from buyMap
 		for(Double pr : removeItems) {
 			sellMap.remove(pr);
 		}
@@ -86,6 +91,42 @@ public class PriceListenerImpl implements PriceListener {
 	@Override
 	public String getSecurity() {
 		return this.security;
+	}
+
+	public Set<Double> getRemoveItems() {
+		return removeItems;
+	}
+
+	public void setRemoveItems(Set<Double> removeItems) {
+		this.removeItems = removeItems;
+	}
+
+	public TreeMap<Double, List<TradingStrategy>> getBuyMap() {
+		return buyMap;
+	}
+
+	public void setBuyMap(TreeMap<Double, List<TradingStrategy>> buyMap) {
+		this.buyMap = buyMap;
+	}
+
+	public TreeMap<Double, List<TradingStrategy>> getSellMap() {
+		return sellMap;
+	}
+
+	public void setSellMap(TreeMap<Double, List<TradingStrategy>> sellMap) {
+		this.sellMap = sellMap;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public void setSecurity(String security) {
+		this.security = security;
 	}
 	
 	

@@ -5,5 +5,5 @@ public enum TradingStatus {
 	PENDING,
 	PROCESSING,
 	EXECUTED;
-
+ 
 }

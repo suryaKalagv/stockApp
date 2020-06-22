@@ -86,7 +86,7 @@ public class TradingStrategy {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{ Security:'").append(security).append("' price:").append(price);
-		sb.append(" volume:").append(volume).append(" Type:'").append(type).append("'}");
+		sb.append(" volume:").append(volume).append(" Type:'").append(type).append("' Status:'").append(getStatus().name()).append("'}");
 		return sb.toString();
 	}
 }

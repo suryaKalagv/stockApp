@@ -1,13 +1,10 @@
 package com.acme.mytrader.price;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PriceSourceImpl implements PriceSource {
-  int currentTime = 0 ;
-  int currentPrice = 10;
+ 
   
   Map<String, PriceListener> listnerMap = new ConcurrentHashMap<String, PriceListener>();
 
@@ -41,6 +38,14 @@ public class PriceSourceImpl implements PriceSource {
 		PriceListener pl = new PriceListenerImpl(security);
 		listnerMap.put(security, pl);
 		return pl;
+	}
+
+	public Map<String, PriceListener> getListnerMap() {
+		return listnerMap;
+	}
+
+	public void setListnerMap(Map<String, PriceListener> listnerMap) {
+		this.listnerMap = listnerMap;
 	}
 
 
